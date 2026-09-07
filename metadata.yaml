@@ -1,5 +1,5 @@
 homepage: "https://cookieshift.com"
 documentation: "https://cookieshift.com/docs"
 versions:
-  - sha: f6b7633b9b823f324dbba915ccbabec50dc810ba
+  - sha: 1c176b37ae68090c8fc65de30f4282f7a79b754f
     changeNotes: Initial CookieShift Consent Mode Community Template (Consent Initialization, Site ID UUID, Consent Mode v2 sync).
