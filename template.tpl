@@ -99,7 +99,70 @@ const encodeUriComponent = require('encodeUriComponent');
 
 const CMP_ORIGIN = 'https://cookieshift.com';
 const CMP_SCRIPT_BASE = CMP_ORIGIN + '/cmp.js';
-const UUID_RE = new RegExp('^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$', 'i');
+
+const isHexChar = function(ch) {
+  return (
+    (ch >= '0' && ch <= '9') ||
+    (ch >= 'a' && ch <= 'f') ||
+    (ch >= 'A' && ch <= 'F')
+  );
+};
+
+const isHexBlock = function(str, expectedLen) {
+  if (!str || str.length !== expectedLen) {
+    return false;
+  }
+  let i = 0;
+  while (i < expectedLen) {
+    if (!isHexChar(str.charAt(i))) {
+      return false;
+    }
+    i = i + 1;
+  }
+  return true;
+};
+
+const isValidSiteIdUuid = function(value) {
+  if (!value || typeof value !== 'string' || value.length !== 36) {
+    return false;
+  }
+  if (
+    value.charAt(8) !== '-' ||
+    value.charAt(13) !== '-' ||
+    value.charAt(18) !== '-' ||
+    value.charAt(23) !== '-'
+  ) {
+    return false;
+  }
+  const p0 = value.substring(0, 8);
+  const p1 = value.substring(9, 13);
+  const p2 = value.substring(14, 18);
+  const p3 = value.substring(19, 23);
+  const p4 = value.substring(24, 36);
+  if (
+    !isHexBlock(p0, 8) ||
+    !isHexBlock(p1, 4) ||
+    !isHexBlock(p2, 4) ||
+    !isHexBlock(p3, 4) ||
+    !isHexBlock(p4, 12)
+  ) {
+    return false;
+  }
+  const version = p2.charAt(0).toLowerCase();
+  if (version < '1' || version > '5') {
+    return false;
+  }
+  const variant = p3.charAt(0).toLowerCase();
+  if (
+    variant !== '8' &&
+    variant !== '9' &&
+    variant !== 'a' &&
+    variant !== 'b'
+  ) {
+    return false;
+  }
+  return true;
+};
 
 const siteId = makeString(data.siteId || '').trim();
 let waitMs = makeNumber(data.waitForUpdate);
@@ -119,7 +182,7 @@ const defaults = {
 
 setDefaultConsentState(defaults);
 
-if (!siteId || !UUID_RE.test(siteId)) {
+if (!siteId || !isValidSiteIdUuid(siteId)) {
   data.gtmOnFailure();
   return;
 }
