@@ -99,7 +99,7 @@ const encodeUriComponent = require('encodeUriComponent');
 
 const CMP_ORIGIN = 'https://cookieshift.com';
 const CMP_SCRIPT_BASE = CMP_ORIGIN + '/cmp.js';
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_RE = new RegExp('^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$', 'i');
 
 const siteId = makeString(data.siteId || '').trim();
 let waitMs = makeNumber(data.waitForUpdate);
